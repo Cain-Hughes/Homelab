@@ -2,11 +2,11 @@
 
 This repository documents the evolution of my personal homelab, covering its core infrastructure, virtual machines, containers, network architecture, and more. My goal is to capture what I’ve built, what I’ve learned, and what I continue to refine as my skills and environment grow.
 
-Feel free to explore, take inspiration, or offer constructive feedback—I'm always looking for ways to improve and expand this project.
+Feel free to explore, take inspiration, or offer constructive feedback. I'm always looking for ways to improve and expand this project.
 
 # Navigation
 
-* [infrastructure](https://github.com/cain-hughes/homelab/tree/main/infrastructure) - List of all of my infrastructure including configuration
+* [infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) - List of all of my infrastructure including configuration
 * [Networking](https://github.com/cain-hughes/homelab/tree/main/networking) - Logical layout and design of my network
 * [Hypervisor](https://github.com/Cain-Hughes/Homelab/tree/main/Hypervisor) - My preferred hypervisor and its configuration
 * [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/virtual-machines) - List of all my VM's and their setups
@@ -17,15 +17,13 @@ Feel free to explore, take inspiration, or offer constructive feedback—I'm alw
 
 Welcome to my homelab documentation repository. This project highlights the core components of my setup and will continue to evolve as I expand and refine my environment. Check back regularly for updates as I explore new tools, configurations, and ideas.
 
----
 
 ## Infrastructure
 
 My current hardware stack centers around an HPE ProLiant DL380 Gen9 server with approximately 14 TB of storage, supported by an Eaton 1U UPS and a Cisco 24-port Layer 2 switch.  
 You can find detailed hardware information, configuration notes, and lessons learned on the  
-[Infrastructure](https://github.com/cain-hughes/homelab/tree/main/infrastructure) page.
+[Infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) page.
 
----
 
 ## Hypervisor & Virtualization
 
@@ -35,20 +33,18 @@ I run Proxmox as my primary hypervisor, chosen for its flexibility, performance,
 My virtualized environment includes:
 
 - A TrueNAS VM responsible for all storage pool management  
-- A Docker VM dedicated to running my media server stack  
+- A Docker VM dedicated to running my media server stack and other useful containers  
 - An LXC container for AdGuard Home
 
 Details on each virtual machine and its role can be found on the  
 [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/virtual-machines) page.
 
----
 
 ## Containers & Services
 
 My services are primarily containerized to keep the environment modular and easy to maintain. This includes media applications, supporting tools, and system utilities. A full list of the containers I run, along with their configurations and purposes, can be found on the  
 [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/containers) page.
 
----
 
 ## About This Repository
 
