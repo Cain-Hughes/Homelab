@@ -6,10 +6,10 @@ Feel free to explore, take inspiration, or offer constructive feedback—I'm alw
 
 # Navigation
 
-*[infrastructure](https://github.com/cain-hughes/homelab/infrastructure) - List of all of my infrastructure including configuration
-*[Hypervisor](https://github.com/Cain-Hughes/Homelab/Hypervisor) - My preferred hypervisor and its configuration
-*[Virtual Machines](https://github.com/Cain-Hughes/Homelab/virtual-machines) - List of all my VM's and their setups
-*[Containers](https://github.com/Cain-Hughes/Homelab/containers) - List of all my containers and their setups
+* [infrastructure](https://github.com/cain-hughes/homelab/infrastructure) - List of all of my infrastructure including configuration
+* [Hypervisor](https://github.com/Cain-Hughes/Homelab/Hypervisor) - My preferred hypervisor and its configuration
+* [Virtual Machines](https://github.com/Cain-Hughes/Homelab/virtual-machines) - List of all my VM's and their setups
+* [Containers](https://github.com/Cain-Hughes/Homelab/containers) - List of all my containers and their setups
 
 
 # Overview
