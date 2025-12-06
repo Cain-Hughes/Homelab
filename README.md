@@ -7,11 +7,11 @@ Feel free to explore, take inspiration, or offer constructive feedback. I'm alwa
 
 # Navigation
 
-* [infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) - List of all of my infrastructure including configuration
-* [Networking](https://github.com/Cain-Hughes/Homelab/tree/main/networking) - Logical layout and design of my network
+* [Infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) - List of all of my infrastructure including configuration
+* [Networking](https://github.com/Cain-Hughes/Homelab/tree/main/Networking) - Logical layout and design of my network
 * [Hypervisor](https://github.com/Cain-Hughes/Homelab/tree/main/Hypervisor) - My preferred hypervisor and its configuration
-* [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/virtual-machines) - List of all my VM's and their setups
-* [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/containers) - List of all my containers and their setups
+* [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/Virtual-Machines) - List of all my VM's and their setups
+* [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/Containers) - List of all my containers and their setups
 
 
 ## Infrastructure
@@ -33,13 +33,13 @@ My virtualized environment includes:
 - An LXC container for AdGuard Home
 
 Details on each virtual machine and its role can be found on the  
-[Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/virtual-machines) page.
+[Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/Virtual-Machines) page.
 
 
 ## Containers & Services
 
 My services are primarily containerized to keep the environment modular and easy to maintain. This includes media applications, supporting tools, and system utilities. A full list of the containers I run, along with their configurations and purposes, can be found on the  
-[Containers](https://github.com/Cain-Hughes/Homelab/tree/main/containers) page.
+[Containers](https://github.com/Cain-Hughes/Homelab/tree/main/Containers) page.
 
 
 ## About This Repository
