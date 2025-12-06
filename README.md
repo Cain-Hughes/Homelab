@@ -4,18 +4,14 @@ This repository documents the evolution of my personal homelab, covering its cor
 
 Feel free to explore, take inspiration, or offer constructive feedback. I'm always looking for ways to improve and expand this project.
 
+
 # Navigation
 
 * [infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) - List of all of my infrastructure including configuration
-* [Networking](https://github.com/cain-hughes/homelab/tree/main/networking) - Logical layout and design of my network
+* [Networking](https://github.com/Cain-Hughes/Homelab/tree/main/networking) - Logical layout and design of my network
 * [Hypervisor](https://github.com/Cain-Hughes/Homelab/tree/main/Hypervisor) - My preferred hypervisor and its configuration
 * [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/virtual-machines) - List of all my VM's and their setups
 * [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/containers) - List of all my containers and their setups
-
-
-# Overview
-
-Welcome to my homelab documentation repository. This project highlights the core components of my setup and will continue to evolve as I expand and refine my environment. Check back regularly for updates as I explore new tools, configurations, and ideas.
 
 
 ## Infrastructure
@@ -32,8 +28,8 @@ I run Proxmox as my primary hypervisor, chosen for its flexibility, performance,
 
 My virtualized environment includes:
 
-- A TrueNAS VM responsible for all storage pool management  
-- A Docker VM dedicated to running my media server stack and other useful containers  
+- A TrueNAS CE VM responsible for all storage pool management  
+- An Ubuntu Server VM running Docker, dedicated to running my media server stack and other useful containers  
 - An LXC container for AdGuard Home
 
 Details on each virtual machine and its role can be found on the  
