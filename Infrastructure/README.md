@@ -7,7 +7,7 @@ My primary homelab server is an HPE ProLiant DL380 Gen9 equipped with dual Intel
 ### 1. Start with a Clean Slate  
 Remove any existing storage drives and fully format them. While this is in progress, enter the BIOS and reset all settings to factory defaults, including the iLO module.
 
-![ILO Example Screenshot]()
+![ILO Example Screenshot](https://github.com/Cain-Hughes/Homelab/blob/main/Infrastructure/Images/ilo1.png)
 ### 2. Configure iLO Early  
 I strongly recommend setting up iLO at this stage and configuring the server from your preferred workstation. You will spend a significant amount of time managing and adjusting settings, and full remote access becomes invaluable if you ever lose access to your hypervisor.  
 With iLO, you can perform complete remote management as if you were physically in front of the server, including tasks like mounting ISO images for installation.
