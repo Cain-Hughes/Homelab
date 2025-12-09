@@ -31,3 +31,27 @@ System Utilities → System Configuration → BIOS/Platform Configuration (RBSU)
 For the operating system or hypervisor, use an SSD rather than traditional hard drives. In my setup, I installed a PCIe adapter with an M.2 slot and mounted a WD Black SN770 1 TB SSD, which provides excellent performance for virtual machine workloads.
 
 This configuration has served as a solid foundation for my homelab and supports future expansion as my environment grows.
+
+
+## Storage and Expansion Hardware
+
+### SAS Storage Array
+My server includes a full array of twenty-four 10K SAS drives installed in the front SFF bays. These drives provide a reliable and high-performance foundation for my storage pool. I am passing all twenty-four drives through the HPE Smart Array controller in HBA mode, allowing TrueNAS to manage the disks directly using ZFS. This setup gives me the flexibility to design my own vdev layout, maintain end-to-end data integrity, and avoid traditional hardware RAID layers.
+
+Running the controller in HBA mode ensures:
+- Direct ZFS visibility into all drives  
+- Better data consistency and error reporting  
+- The ability to utilize ZFS features such as RAIDZ, snapshots, and self-healing  
+
+This configuration has worked reliably and provides the performance I need for my media-focused workloads.
+
+### GPU Acceleration
+The server is equipped with an NVIDIA Quadro P2000. This card is widely used in media servers for its strong NVENC/NVDEC hardware encoding capabilities and power efficiency. In my setup, it is available for GPU acceleration tasks such as transcoding within Jellyfin and other containers.
+
+Using the P2000 allows me to:
+- Offload transcoding workloads from the CPUs  
+- Support multiple simultaneous media streams  
+- Maintain lower overall system load during peak usage  
+
+This GPU has been a solid addition to the system and integrates well with my current Proxmox and container-based environment.
+
