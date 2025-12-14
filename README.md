@@ -32,7 +32,7 @@ My virtualized environment includes:
 - An Ubuntu Server VM running Docker, dedicated to running my media server stack and other useful containers  
 - An LXC container for AdGuard Home
 
-Details on each virtual machine and its role can be found on the  
+Details on each virtual machine and their roles can be found on the  
 [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/Virtual-Machines) page.
 
 
@@ -40,10 +40,3 @@ Details on each virtual machine and its role can be found on the
 
 My services are primarily containerized to keep the environment modular and easy to maintain. This includes media applications, supporting tools, and system utilities. A full list of the containers I run, along with their configurations and purposes, can be found on the  
 [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/Containers) page.
-
-
-## About This Repository
-
-This repository serves as a living record of my homelab journey—documenting what I build, how I built it, and what I’ve learned along the way. My goal is to provide clear, useful documentation for myself and others who may find inspiration or value in these projects.
-
-If you have suggestions or ideas for improvement, feel free to open an issue or reach out.

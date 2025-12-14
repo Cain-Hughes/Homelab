@@ -1,8 +1,9 @@
 # Proxmox Hypervisor ***(work in progress)***
 
-This section documents the Proxmox VE environment that forms the core of my homelab. I am currently running Proxmox VE 9.x.x on an HPE ProLiant DL380 Gen9 configured as my primary hypervisor. Proxmox has been a reliable and flexible platform for managing virtual machines, containers, and hardware pass-through, and it continues to be one of the best hypervisors for hands-on learning and experimentation.
+This section documents the Proxmox VE environment that forms the core of my homelab. I am currently running Proxmox VE 9.x.x (Latest version as I am constantly updating) on an HPE ProLiant DL380 Gen9 configured as my primary hypervisor. Proxmox has been a reliable and flexible platform for managing virtual machines, containers, and hardware pass-through, and it continues to be one of the best hypervisors for hands-on learning and experimentation.
 
 My setup is designed to support storage virtualization, media services, network services, and general testing. Proxmox provides an easy way to isolate workloads, snapshot them, experiment with new configurations, and recover quickly when something breaks.
+
 
 ## Current Virtualization Layout
 
@@ -56,6 +57,8 @@ If your server supports it (such as HPE iLO), set it up immediately. Remote cons
 ### 2. Use a Separate Disk or SSD for the Proxmox OS  
 Avoid installing Proxmox directly onto your main storage pool. A small SSD keeps your hypervisor environment clean and independent from your virtual machines.
 
+In my setup, its not actually possible to run proxmox on my main pool, as its passing through directly to TrueNAS, but even if it was possible it is not reccomended.
+
 ### 3. Enable Notifications and Update Regularly  
 Proxmox updates are frequent and generally reliable. Enabling email notifications can help keep you informed about system updates, disk issues, or backup alerts.
 
@@ -67,6 +70,3 @@ Use the built-in backup system to schedule regular snapshots or full VM backups.
 
 ### 7. Keep Your Hardware Features in Mind  
 If using GPU passthrough, SAS controllers, or high-performance drives, ensure all devices appear correctly in the IOMMU groups and that passthrough is configured before building your VMs.
-
-
-

@@ -3,7 +3,7 @@
 My primary homelab server is an HPE ProLiant DL380 Gen9 equipped with dual Intel Xeon E5-2695 v4 processors and 64 GB of RAM. I purchased the system used from eBay, and it has proven to be a reliable and capable platform for virtualization and storage workloads.
 
 
-## Recommended Setup Steps
+## Recommended Setup Steps (HPE DL380 Gen9)
 
 ### 1. Start with a Clean Slate  
 Remove any existing storage drives and fully format them. While this is in progress, enter the BIOS and reset all settings to factory defaults, including the iLO module.
@@ -14,11 +14,13 @@ I strongly recommend setting up iLO at this stage and configuring the server fro
 With iLO, you can perform complete remote management as if you were physically in front of the server, including tasks like mounting ISO images for installation.
 ![ILO Example Screenshot](https://github.com/Cain-Hughes/Homelab/blob/main/Infrastructure/Images/ilo1.png)
 
-### 3. Update Firmware  
-It is highly recommended to update all firmware components to their latest versions. Though time-consuming, this process ensures stability and compatibility with modern hypervisors.
 
-- User Guide: https://support.hpe.com/hpesc/public/docDisplay?docId=c04436966&docLocale=en_US  
-- Firmware Downloads: https://support.hpe.com/connect/s/product?language=en_US&kmpmoid=7271241&tab=driversAndSoftware
+### 3. Update Firmware  
+It is highly recommended to update all firmware components to their latest versions. Though time-consuming, this process ensures stability and compatibility with modern hypervisors. It appears that HPE has released their SPP (Service Pack for Prolient) for this generation of server for free now, so I reccomend using that first and filling in the gaps after.
+
+- [Latest SPP for HPE Gen 9](https://support.hpe.com/connect/s/softwaredetails?tab=releaseNotes&collectionId=MTX-d25d2a7d88de4d64)
+- [User Guide](https://support.hpe.com/hpesc/public/docDisplay?docId=c04436966&docLocale=en_US)  
+- [Firmware Downloads](https://support.hpe.com/connect/s/product?language=en_US&kmpmoid=7271241&tab=driversAndSoftware)
 
 
 ### 4. Enable Virtualization Features  
@@ -32,10 +34,10 @@ For the operating system or hypervisor, use an SSD rather than traditional hard 
 
 This configuration has served as a solid foundation for my homelab and supports future expansion as my environment grows.
 
+You can either run this storage in a mirrored raid configuration for redundency or you can store backups of your OS and virtual machines in the case of a failure. I have opted to run a single ssd and perform backups instead do to the general reliablity of SSD's.
 
-## Storage and Expansion Hardware
 
-### SAS Storage Array
+### 6. SAS Storage Array
 My server includes a full array of twenty-four 10K SAS drives installed in the front SFF bays. These drives provide a reliable and high-performance foundation for my storage pool. I am passing all twenty-four drives through the HPE Smart Array controller in HBA mode, allowing TrueNAS to manage the disks directly using ZFS. This setup gives me the flexibility to design my own vdev layout, maintain end-to-end data integrity, and avoid traditional hardware RAID layers.
 
 Running the controller in HBA mode ensures:
@@ -45,7 +47,8 @@ Running the controller in HBA mode ensures:
 
 This configuration has worked reliably and provides the performance I need for my media-focused workloads.
 
-### GPU Acceleration
+
+### 7. GPU Acceleration
 The server is equipped with an NVIDIA Quadro P2000. This card is widely used in media servers for its strong NVENC/NVDEC hardware encoding capabilities and power efficiency. In my setup, it is available for GPU acceleration tasks such as transcoding within Jellyfin and other containers.
 
 Using the P2000 allows me to:
@@ -54,4 +57,3 @@ Using the P2000 allows me to:
 - Maintain lower overall system load during peak usage  
 
 This GPU has been a solid addition to the system and integrates well with my current Proxmox and container-based environment.
-
