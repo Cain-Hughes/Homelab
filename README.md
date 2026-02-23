@@ -17,8 +17,7 @@ Feel free to explore, take inspiration, or offer constructive feedback. I'm alwa
 ## Infrastructure
 
 My current hardware stack centers around an HPE ProLiant DL380 Gen9 server with approximately 14 TB of storage, supported by an Eaton 1U UPS.  
-You can find detailed hardware information, configuration notes, and lessons learned on the  
-[Infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) page.
+You can find detailed hardware information, configuration notes, and lessons learned on the [Infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) page.
 
 
 ## Hypervisor & Virtualization
@@ -31,6 +30,7 @@ My virtualized environment includes:
 - A TrueNAS CE VM responsible for all storage pool management  
 - An Ubuntu Server VM running Docker, dedicated to running my media server stack and other useful containers  
 - An LXC container for AdGuard Home
+- An Ubuntu server VM running AMP, allowing me to run game servers easily and reliably
 
 Details on each virtual machine and their roles can be found on the  
 [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/Virtual-Machines) page.
