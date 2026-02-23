@@ -1,97 +1,94 @@
-# Home Network & Container Environment
+# Containers
 
-This repository documents my personal home network, self-hosted services, and containerized applications.  
-It primarily exists as a living reference for how my environment is designed, why certain decisions were made, and what I’ve learned while building and maintaining it.
+This section of the repository documents the containerized services running within my homelab environment.  
+Rather than treating containers as isolated applications, I view them as modular building blocks that collectively provide core functionality across the network.
 
-The goal of this setup is not just to run services, but to build a stable, understandable, and easily recoverable system that mirrors many of the patterns used in real-world infrastructure.
-
----
-
-## Project Goals
-
-This homelab and container environment is built around a few core ideas:
-
-- **Service isolation and segmentation** – Keeping roles separated and predictable
-- **Security-first design** – Minimizing unnecessary exposure and risk
-- **Reproducibility** – Making rebuilds and migrations straightforward
-- **Operational stability** – Reducing fragile or failure-prone components
-- **Learning & experimentation** – Treating the network as a long-term lab
-
-The environment continues to evolve as I refine workflows, improve reliability, and simplify management.
+The purpose of this documentation is to capture how these services are structured, how they interact, and what roles they serve within the larger system.
 
 ---
 
-## Environment Philosophy
+## Design Approach
 
-Rather than treating containers as individual apps, I try to design the system as a cohesive platform:
+My container strategy is built around a few consistent principles:
 
-- Containers grouped by function  
-- Clear traffic boundaries (LAN vs VPN vs public)  
-- Persistent configuration management  
-- Predictable networking and storage behavior  
-- Minimal manual intervention after failures or reboots  
+- **Service separation** – Containers are grouped by function and responsibility  
+- **Predictable networking** – Clear boundaries between LAN, VPN-routed, and externally exposed services  
+- **Persistent configuration** – Bind mounts and volumes ensure rebuild safety  
+- **Operational resilience** – Health checks and restart logic reduce manual recovery work  
+- **Low-friction maintenance** – Updates and migrations should be routine, not disruptive  
 
-A major focus is avoiding "mystery infrastructure" — everything should be explainable and debuggable.
+Containers allow the environment to remain flexible without tightly coupling services to the host OS.
 
 ---
 
-## Container & Service Documentation
+## Why Containers
 
-Detailed notes for individual services and stacks are kept in separate documents:
+Containerization plays a central role in the stability and maintainability of the homelab:
+
+- Simplifies service deployment and replacement  
+- Reduces dependency conflicts  
+- Encourages clean separation of concerns  
+- Makes experimentation safer and reversible  
+- Mirrors modern infrastructure patterns  
+
+Most new services are introduced as containers unless a strong reason exists not to.
+
+---
+
+## Service Categories
+
+While the exact set of containers changes over time, most services fall into a few broad categories:
+
+**Media & Content Management**  
+Applications responsible for acquisition, organization, and presentation of media.
+
+**Network & Access Services**  
+Reverse proxies, gateways, and routing components that control how traffic flows.
+
+**Monitoring & Stability Utilities**  
+Containers that exist purely to improve reliability and observability.
+
+**Interface & Usability Tools**  
+Dashboards and frontends that simplify interaction with the environment.
+
+---
+
+## Container Documentation
+
+Detailed notes for major services are maintained in dedicated files:
 
 - **[Media Backend Stack](mediabackend.md)**  
-  VPN-routed download clients, automation services, and supporting components
+  VPN-routed services, automation workflows, and download infrastructure
 
 - **[Nginx Proxy Manager](npm.md)**  
-  Reverse proxy configuration, routing strategy, and external access patterns
+  Reverse proxy behavior, routing logic, and exposure strategy
 
 - **[Jellyfin](Jellyfin.md)**  
-  Media server configuration, hardware acceleration, and playback considerations
+  Media server configuration and playback considerations
 
 - **[Homarr](Homarr.md)**  
-  Dashboard design, UI customization, and service organization
+  Dashboard organization and service visibility
 
-These files focus on structure, reasoning, and operational behavior rather than simple installation steps.
-
----
-
-## Design Priorities
-
-Some recurring themes throughout the network and container architecture:
-
-**Reliability over complexity**  
-Simple, predictable systems are preferred over clever but fragile ones.
-
-**Visibility over abstraction**  
-Logs, metrics, and observable behavior matter more than automation magic.
-
-**Incremental improvement**  
-Most changes are small adjustments rather than sweeping redesigns.
-
-**Failure tolerance**  
-Services should recover cleanly from restarts, outages, and dependency delays.
+Each document focuses on function, design decisions, and operational behavior rather than step-by-step installation.
 
 ---
 
-## Why This Repository Exists
+## Operational Philosophy
 
-This project serves multiple purposes:
+Containers are treated as disposable but their data is not.
 
-- Personal documentation and memory aid  
-- Change tracking and design history  
-- Troubleshooting reference  
-- Knowledge sharing for similar builds  
-- A structured record of experiments and lessons learned  
+Rebuilds, migrations, and failures should be recoverable without requiring deep system surgery.  
+If a container breaks, the preferred solution is replacement or correction — not preservation of a fragile state.
 
-It is intentionally written as practical notes rather than polished tutorials.
+This mindset keeps the environment adaptable and reduces long-term technical debt.
 
 ---
 
 ## Notes
 
-Configuration details, network layouts, and service relationships may change over time as the environment evolves.  
-Assume that anything here reflects an actively iterated homelab rather than a static design.
+Service configurations, dependencies, and networking models evolve as the homelab grows.  
+Assume that this section reflects an actively maintained environment rather than a static design.
 
 ---
 
-If you are exploring self-hosting, containers, or homelab design, feel free to browse and adapt ideas as needed.
+For broader context on how these containers fit into the infrastructure and network, refer to the main repository sections.
