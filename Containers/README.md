@@ -11,10 +11,10 @@ The purpose of this documentation is to capture how these services are structure
 
 Detailed notes for major services are maintained in dedicated files:
 
-- **[Media Backend Stack](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/mediabackend.md)**  
+- **[Media Backend Stack](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/MediaBackend.md)**  
   VPN-routed services, automation workflows, and download infrastructure
 
-- **[Nginx Proxy Manager](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/npm.md)**  
+- **[Nginx Proxy Manager](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/NPM.md)**  
   Reverse proxy behavior, routing logic, and exposure strategy
 
 - **[Jellyfin](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/Jellyfin.md)**  
