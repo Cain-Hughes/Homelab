@@ -1,6 +1,6 @@
 # Media Backend / *arr Stack Overview
 
-This compose file defines my media backend environment built around the *arr ecosystem.  
+**[This](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/mediabackend.yaml)** compose file defines my media backend environment built around the *arr ecosystem.  
 It is designed to keep download traffic isolated through a VPN while allowing the rest of the services to operate normally on the local network.
 
 A large portion of this stack, its structure, and several design decisions were created with guidance from **TechHutTV**.  
@@ -63,7 +63,7 @@ This ensures their traffic never bypasses the VPN.
 ### qBittorrent
 
 Runs entirely through Gluetun’s network namespace.
-
+Relies on a script that automatically updates the forwarded port from gluetun to maintain an un-firewalled connection **[Here](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/qbt_port_sync.py)**
 Key behaviors:
 
 - Web UI exposed via Gluetun
