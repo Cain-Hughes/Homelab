@@ -7,6 +7,26 @@ The purpose of this documentation is to capture how these services are structure
 
 ---
 
+## Container Documentation
+
+Detailed notes for major services are maintained in dedicated files:
+
+- **[Media Backend Stack](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/mediabackend.md)**  
+  VPN-routed services, automation workflows, and download infrastructure
+
+- **[Nginx Proxy Manager](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/npm.md)**  
+  Reverse proxy behavior, routing logic, and exposure strategy
+
+- **[Jellyfin](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/Jellyfin.md)**  
+  Media server configuration and playback considerations
+
+- **[Homarr](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/Homarr.md)**  
+  Dashboard organization and service visibility
+
+Each document focuses on function, design decisions, and operational behavior rather than step-by-step installation.
+
+---
+
 ## Design Approach
 
 My container strategy is built around a few consistent principles:
@@ -50,26 +70,6 @@ Containers that exist purely to improve reliability and observability.
 
 **Interface & Usability Tools**  
 Dashboards and frontends that simplify interaction with the environment.
-
----
-
-## Container Documentation
-
-Detailed notes for major services are maintained in dedicated files:
-
-- **[Media Backend Stack](mediabackend.md)**  
-  VPN-routed services, automation workflows, and download infrastructure
-
-- **[Nginx Proxy Manager](npm.md)**  
-  Reverse proxy behavior, routing logic, and exposure strategy
-
-- **[Jellyfin](Jellyfin.md)**  
-  Media server configuration and playback considerations
-
-- **[Homarr](Homarr.md)**  
-  Dashboard organization and service visibility
-
-Each document focuses on function, design decisions, and operational behavior rather than step-by-step installation.
 
 ---
 
