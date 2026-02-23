@@ -16,7 +16,7 @@ Feel free to explore, take inspiration, or offer constructive feedback. I'm alwa
 
 ## Infrastructure
 
-My current hardware stack centers around an HPE ProLiant DL380 Gen9 server with approximately 14 TB of storage, supported by an Eaton 1U UPS and a Cisco 24-port Layer 2 switch.  
+My current hardware stack centers around an HPE ProLiant DL380 Gen9 server with approximately 14 TB of storage, supported by an Eaton 1U UPS.  
 You can find detailed hardware information, configuration notes, and lessons learned on the  
 [Infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) page.
 
