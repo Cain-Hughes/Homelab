@@ -16,7 +16,7 @@ I am currently running the following VMs on the hypervisor:
 - **Docker Server VM**  
   Runs my media server stack using Docker and includes containers such as Jellyfin, Radarr, Sonarr, qBittorrent, Gluetun, Prowlarr, Jellyseerr, Homarr, Cloudflare-DDNS, and NPM. This VM centralizes all containerized workloads and keeps storage separate from applications.
 
-- **AMP Gameserver VM**
+- **AMP Gameserver VM**  
   Hosts the AMP game management panel by Cubecoders. While AMP requires a license, the lifetime option is very affordable and provides a powerful, centralized way to deploy, manage, and maintain multiple game servers. The platform is actively developed and regularly updated, making it a reliable solution for long-term use.
 
 ### LXC Containers
