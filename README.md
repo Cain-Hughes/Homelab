@@ -4,6 +4,13 @@ This repository documents the evolution of my personal homelab, covering its cor
 
 Feel free to explore, take inspiration, or offer constructive feedback. I'm always looking for ways to improve and expand this project.
 
+## BuildLog
+
+Ongoing changes, experiments, and operational notes from my homelab are documented in the BuildLog.
+
+This section serves as a lightweight, chronological journal of improvements, troubleshooting, and design decisions as the environment evolves.
+
+→ **[View the BuildLog](./buildlog/README.md)**
 
 # Navigation
 
