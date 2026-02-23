@@ -1,4 +1,4 @@
-# Homelab ***(work in progress)***
+# Homelab
 
 This repository documents the evolution of my personal homelab, covering its core infrastructure, virtual machines, containers, network architecture, and more. My goal is to capture what I’ve built, what I’ve learned, and what I continue to refine as my skills and environment grow.
 
@@ -10,7 +10,7 @@ Ongoing changes, experiments, and operational notes from my homelab are document
 
 This section serves as a lightweight, chronological journal of improvements, troubleshooting, and design decisions as the environment evolves.
 
-→ **[View the B(uild)Log](https://github.com/Cain-Hughes/Homelab/tree/main/buildlog/readme.md)**
+→ **[View the B(uild)Log](https://github.com/Cain-Hughes/Homelab/tree/main/BuildLog/README.md)**
 
 # Navigation
 
