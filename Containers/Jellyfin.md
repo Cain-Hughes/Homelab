@@ -1,6 +1,6 @@
 # Jellyfin
 
-**[This compose file](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/Jellyfin.yaml) defines my Jellyfin media server, which acts as the primary platform for consuming and streaming media within the homelab.
+**[This compose file](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/Jellyfin.yaml)** defines my Jellyfin media server, which acts as the primary platform for consuming and streaming media within the homelab.
 
 Jellyfin is responsible for presenting and organizing media while leveraging GPU acceleration to handle transcoding workloads efficiently.
 
