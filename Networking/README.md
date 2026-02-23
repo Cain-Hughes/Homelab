@@ -40,12 +40,12 @@ Exception:
 
 | VLAN | Purpose            | Subnet            |
 |------|--------------------|-------------------|
-| 1    | UniFi Infrastructure | Default         |
+| 1    | UniFi Infrastructure | 10.10.1.0/24Default |
 | 20   | Servers            | 10.10.20.0/24     |
 | 30   | Trusted Clients    | 10.10.30.0/24     |
 | 40   | IoT Devices        | 10.10.40.0/24     |
 | 50   | Guest Network      | 10.10.50.0/24     |
-| 60   | Work Devices       | 192.168.x.0/24    |
+| 60   | Work Devices       | 192.168.1.0/24    |
 
 ---
 
