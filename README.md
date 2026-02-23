@@ -10,7 +10,7 @@ Ongoing changes, experiments, and operational notes from my homelab are document
 
 This section serves as a lightweight, chronological journal of improvements, troubleshooting, and design decisions as the environment evolves.
 
-→ **[View the B(uild)Log](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure)**
+→ **[View the B(uild)Log](https://github.com/Cain-Hughes/Homelab/tree/main/buildlog/readme.md)**
 
 # Navigation
 
