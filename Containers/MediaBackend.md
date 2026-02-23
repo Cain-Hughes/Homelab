@@ -1,6 +1,6 @@
 # Media Backend / *arr Stack Overview
 
-**[This](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/MediaBackend.yaml)** compose file defines my media backend environment built around the *arr ecosystem.  
+**[This compose file](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/MediaBackend.yaml)** defines my media backend environment built around the *arr ecosystem.  
 It is designed to keep download traffic isolated through a VPN while allowing the rest of the services to operate normally on the local network.
 
 A large portion of this stack, its structure, and several design decisions were created with guidance from **TechHutTV**.  
