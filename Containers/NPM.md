@@ -89,7 +89,7 @@ NPM sits at the boundary between external clients and internal services.
 
 Typical flow:
 
-Internet → Port Forwarding → NPM → Internal Service
+Internet → Cloudflare Proxy → Firewall to only allow Cloudflare IP's → Port Forwarding → NPM → Internal Service
 
 This model centralizes certificate management and reduces direct exposure of backend containers.
 
