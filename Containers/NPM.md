@@ -1,107 +1,36 @@
 # Nginx Proxy Manager
 
-[This compose file](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/NPM.yaml) defines my Nginx Proxy Manager (NPM) instance, which serves as the primary entry point for externally exposed services within the homelab.
+NPM provides reverse proxy routing and centralized TLS for the homelab. It runs on the Docker host at `10.10.20.5`, with port 81 for administration and ports 80/443 for HTTP/HTTPS. The [Compose file](NPM.yaml) keeps application state in `./data` and certificates in `./letsencrypt` under `/docker/npm`.
 
-NPM provides a simple interface for managing reverse proxy hosts, SSL certificates, and traffic routing without requiring manual Nginx configuration.
+## Recently added routes
 
----
+Hostnames below are documentation placeholders, not the real service domains.
 
-## Purpose of This Service
+| Example hostname | Upstream | Purpose |
+|---|---|---|
+| `uptime.example.com` | `http://10.10.20.8:3001` | Primary Uptime Kuma |
+| `uptime2.example.com` | `http://10.10.20.5:3001` | Secondary Uptime Kuma |
+| `adguard2.example.com` | `http://10.10.20.8:80` | Secondary DNS administration |
+| `streamy.example.com` | `http://10.10.20.5:3002` | Streamystats |
 
-Nginx Proxy Manager acts as the central routing layer between the public network and internally hosted applications.
+These routes use the existing wildcard certificate and Force SSL. Streamystats additionally has HTTP/2 and WebSocket support enabled, with asset caching disabled. Its HTTPS health endpoint and login page returned successfully, HTTP redirected to HTTPS, and Nginx configuration validation passed after saving the host.
 
-Core responsibilities include:
+The public Compose file starts NPM; it does not create proxy hosts or restore certificates. Configure routes through NPM or restore its private data consistently. Never publish its database or certificate directory.
 
-- Reverse proxying internal services
-- Managing TLS / SSL certificates via Let's Encrypt
-- Providing a web-based administrative interface
-- Simplifying domain and subdomain routing
-- Reducing the need for manual Nginx edits
+## Routing and authentication
 
-This container effectively becomes the "front door" for any intentionally exposed service.
+The documented external design is Cloudflare proxying, gateway filtering, and forwarded HTTP/HTTPS traffic to NPM. LAN DNS can resolve service domains directly to the internal proxy. A successful LAN check therefore does not validate the entire public Internet path or current firewall rules.
 
----
+NPM's “Public” access-list label means that NPM itself does not impose an access list. It does not describe an application's login policy or prove the endpoint is reachable from the Internet. Application authentication remains necessary.
 
-## Port Mapping
+HTTPS protects browser-to-proxy traffic. The routes above intentionally use HTTP on the LAN side. WebSocket support is enabled for services that need it; other live updates may use normal HTTP streaming.
 
-The container exposes the standard ports required for web traffic and administration:
+## Recovery and checks
 
-- **80 → HTTP**  
-  Used for inbound HTTP traffic and certificate validation
+- Back up `data` and `letsencrypt` consistently and privately.
+- Check DNS from the affected client, then the backend by IP/port, then the HTTPS hostname.
+- Review certificate validity, upstream reachability, NPM logs, and application login behavior separately.
+- Validate Nginx after a change and test the actual application, not only the proxy host's Online label.
+- Do not treat a wildcard certificate as DNS configuration: the hostname must still resolve appropriately.
 
-- **443 → HTTPS**  
-  Used for encrypted external access
-
-- **81 → Admin Interface**  
-  Web UI for managing proxy hosts, certificates, and settings
-
-Port mappings follow the format:
-
-<host-port>:<container-port>
-
----
-
-## Data Persistence
-
-Two bind mounts are used to preserve configuration and certificate data:
-
-- `./data → /data`  
-  Stores application configuration, settings, and the SQLite database
-
-- `./letsencrypt → /etc/letsencrypt`  
-  Stores issued certificates and related metadata
-
-This ensures container recreation or upgrades do not result in lost configuration.
-
----
-
-## Timezone Configuration
-
-The container uses an explicit timezone setting:
-
-TZ=America/New_York
-
-This keeps logs, certificate timestamps, and scheduled operations aligned with the local environment.
-
----
-
-## Restart Behavior
-
-The container uses:
-
-restart: unless-stopped
-
-This allows automatic recovery after host reboots or transient failures while still permitting intentional shutdowns.
-
----
-
-## Database Behavior
-
-By default, Nginx Proxy Manager uses an internal SQLite database stored under `/data`.
-
-For homelab scale, SQLite remains sufficient and simpler to maintain.
-
----
-
-## Operational Role in the Network
-
-NPM sits at the boundary between external clients and internal services.
-
-Typical flow:
-
-Internet → Cloudflare Proxy → Firewall to only allow Cloudflare IP's → Port Forwarding → NPM → Internal Service
-
-This model centralizes certificate management and reduces direct exposure of backend containers.
-
----
-
-## Notes
-
-- Only services intended for remote access are proxied
-- Internal-only services remain unexposed
-- Certificates and configs survive container rebuilds
-- Additional stream ports can be mapped if required
-
----
-
-This service is intentionally kept minimal, stable, and persistent as many other components depend on its availability.
+Related: [networking](../Networking/README.md), [Uptime Kuma](UptimeKuma.md), [Streamystats](Streamystats.md).

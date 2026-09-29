@@ -1,164 +1,82 @@
-# Media Backend / *arr Stack Overview
+# Media backend / *arr stack
 
-**[This compose file](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/MediaBackend.yaml)** defines my media backend environment built around the *arr ecosystem.  
-It is designed to keep download traffic isolated through a VPN while allowing the rest of the services to operate normally on the local network.
+The media stack coordinates requests, downloads, extraction, imports, and library metadata. Its original layout was based on [TechHut's media guide](https://github.com/TechHutTV/homelab/tree/main/media).
 
-A large portion of this stack, its structure, and several design decisions were created with guidance from **TechHutTV**.  
-Their excellent GitHub repository is referenced directly inside the compose file and served as the foundation for this setup:
+The [Compose template](MediaBackend.yaml) is a sanitized example. On a new deployment, copy it to `/docker/mediabackend/compose.yaml` alongside a locally populated `.env` based on [MediaBackend.env.example](MediaBackend.env.example). Compare it with any existing deployment before applying changes.
 
-https://github.com/TechHutTV/homelab/tree/main/media
+## Services and networking
 
-I highly recommend following their YouTube guide and documentation on their GitHub for configuring a home media service like this, it was the easiest to follow and understand.  
----
+| Service | Role | Networking |
+|---|---|---|
+| Gluetun | Proton VPN gateway and forwarded-port state | Own namespace |
+| qBittorrent | Downloads; currently pinned to 5.1.4 | Shares Gluetun's namespace |
+| Prowlarr | Indexer management | Shares Gluetun's namespace |
+| Deunhealth | Restarts unhealthy labeled containers | No network; privileged Docker socket access |
+| Sonarr | TV acquisition, imports, profiles, metadata | LAN/Docker network |
+| Radarr | Movie acquisition, imports, profiles, metadata | LAN/Docker network |
+| Seerr | Requests and request defaults | LAN/Docker network |
+| Unpackerr | Archive extraction for imports | LAN/Docker network |
+| Decluttarr | Failed/stalled queue cleanup and configured searches | LAN/Docker network |
 
-## General Design
+qBittorrent and Prowlarr use `network_mode: service:gluetun`. Gluetun provides their tunnel and exposes their web ports. Verify tunnel and firewall behavior; a health check alone does not prove every traffic path is protected.
 
-The stack is split into two logical groups:
+The template uses **`172.30.0.0/24`**, a private subnet. This deliberately differs from the live media network, whose addressing needs a future correction. No live network migration was performed during this documentation update. Check for overlap and update static assignments together before changing the live network.
 
-**1. VPN-bound services**  
-These containers share the network namespace of the VPN container so that all of their traffic is forced through the tunnel.
+The Gluetun check tests connectivity and the presence of its forwarded-port file. The public example uses a DNS name instead of a public IP, which also makes that check depend on DNS. Review the endpoint and failure behavior for your environment.
 
-**2. Local network services**  
-These containers run normally on the Docker network and are reachable directly from the LAN.
+## Storage and permissions
 
-All containers use the same user and group IDs (`PUID` / `PGID`) to avoid permission issues with downloaded files.
+The Docker host mounts the TrueNAS share at `/data` using NFS. Sonarr, Radarr, and qBittorrent see the same path, allowing hardlinks where the filesystem and configuration permit.
 
-Configuration data is stored using bind mounts relative to the compose directory.
+Most application images use UID/GID 1000 or equivalent `PUID`/`PGID` settings. These variables are image-specific, not uniformly supported by every image. Unpackerr explicitly runs as the selected user/group.
 
----
+Unpackerr's writable mount and *arr search paths are restricted to **`/data/downloads`**. Media library folders are not mounted into it. Original archive deletion remains disabled. Extraction and *arr import are separate steps; a completed download alone does not establish success.
 
-## Network Layout
+## Download-queue repairs — September 2026
 
-A dedicated Docker network is used:
+Two settings were disrupting archive imports: qBittorrent excluded archive extensions, and Decluttarr's `remove_bad_files` job deselected multipart archive pieces.
 
-- **Network Name:** `medianetwork`
-- **Subnet:** `172.39.0.0/24`
+RAR, ZIP, and 7z downloads are now allowed while executable/script exclusions remain. `remove_bad_files` is disabled. Failed-import handling recognizes executable/dangerous-file errors reported by the *arrs. Allowing an archive is not a reason to run files extracted from it.
 
-Static IPs are assigned to key services for consistency and easier troubleshooting.
+Decluttarr runs every 15 minutes with a six-strike default. Public-tracker cleanup uses removal; private-tracker handling uses an obsolete tag to respect seeding policy. Existing missing/cutoff searches remain enabled. The `Keep` tag protects download handling; it is not a library-retention exclusion for Maintainerr.
 
----
+The first live cleanup reduced the observed Sonarr queue from 71 entries to 28 and blocklisted the identified unsafe releases. This was a point-in-time result, not a permanent queue target. Remaining entries need individual diagnosis.
 
-## Container Roles
+The [Decluttarr example](Decluttarr.example.yaml) intentionally starts in **dry-run mode**, unlike production. Populate its API keys locally, copy it to `decluttarr/config.yaml`, review proposed actions, then deliberately enable live operation. Review upstream configuration changes when updating the image.
 
-### Gluetun (VPN Gateway)
+## Sonarr profiles and Seerr requests
 
-Acts as the network gateway for VPN-restricted containers.
+On September 28, Sonarr had one remaining profile, **HD - 720p/1080p**, and all series used it. Unused profiles were removed after moving the affected shows; changing a profile did not itself rewrite downloaded files. Radarr still has additional profiles, so this consolidation does not apply to both applications.
 
-Responsibilities:
+The Sonarr profile includes TRaSH-based preferences with **Season Pack +10**, minimum custom-format score **0**, and upgrade-until score **10000**. Upgrades remain enabled. Quality ordering and other scores still matter: +10 is a preference, not a guarantee to choose a pack over every episode or to find a complete-series pack.
 
-- Establishes VPN tunnel
-- Owns forwarded ports
-- Provides shared network stack for dependent containers
-- Exposes required service ports
+Seerr's default TV, anime TV, and movie destinations use HD - 720p/1080p. Regular users' advanced-request and 4K-request privileges were removed; approval and quota policies were preserved. Administrators retain administrative controls. Profile IDs are installation-specific.
 
-Other containers use:
+**Monitoring is separate from queued downloads.** Unmonitoring a show does not cancel an already queued upgrade. Pending unwanted upgrades were canceled separately. If an upgrade already replaced the old library file, canceling its torrent cannot restore the original without a recycle-bin copy or backup.
 
-network_mode: service:gluetun
+Reference: [TRaSH Guides — Sonarr](https://trash-guides.info/Sonarr/). These are verified deployment settings, not a claim that every current upstream recommendation has been applied.
 
+## Metadata and artwork
 
-This ensures their traffic never bypasses the VPN.
+The Kodi (XBMC) / Emby metadata consumer is enabled in both *arrs:
 
----
+- Sonarr writes series/episode NFO metadata and series/season/episode artwork.
+- Radarr writes `movie.nfo` and movie artwork.
 
-### qBittorrent
+This gives Jellyfin local identification and image files. The missing-artwork case involved an unmatched title, not a blanket failure of online providers. A targeted refresh confirmed Jellyfin consumed generated metadata and artwork. This was not a full-library metadata replacement or media re-download.
 
-Runs entirely through Gluetun’s network namespace.
-Relies on a script that automatically updates the forwarded port from gluetun to maintain an un-firewalled connection **[Here](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/qbt_port_sync.py)**
-Key behaviors:
+## Port synchronization
 
-- Web UI exposed via Gluetun
-- Torrent traffic forced through VPN
-- Restarted automatically if unhealthy (via Deunhealth)
+[qbt_port_sync.py](qbt_port_sync.py) is the script described in the [February build log](../BuildLog/2026-2-W4.md). It compares Gluetun's forwarded port with qBittorrent's listening port and updates it when necessary. It requires Python 3 and `requests`.
 
-Depends on Gluetun being healthy before starting.
+Its credential and session-cookie files remain private. The five-minute cron schedule is the previously documented setup; it was not revalidated during this documentation update.
 
----
+## Verification and recovery
 
-### Deunhealth
+1. Confirm required archive parts are selected and complete.
+2. Confirm Unpackerr reports successful extraction.
+3. Confirm a Sonarr/Radarr import event and the expected library files.
+4. Check failure cleanup/blocklisting with the appropriate tracker and seeding behavior.
+5. Check actual free space: hardlinks and snapshots can retain storage after deletion.
 
-Monitors Docker health states and restarts containers that become unhealthy.
-
-Purpose:
-
-- Self-healing behavior
-- Prevents silent container failures
-- Especially useful for VPN-dependent services
-
-Runs without network access.
-
----
-
-### Prowlarr
-
-Also routed through Gluetun.
-
-Purpose:
-
-- Indexer aggregation
-- Centralized indexer management for Sonarr / Radarr
-- Benefits from VPN routing
-
----
-
-### Sonarr
-
-Manages TV show acquisition and organization.
-
-Runs on the local Docker network so it is easily reachable from the LAN.
-
-Responsibilities:
-
-- Library management
-- Download automation
-- qBittorrent integration
-- Media organization
-
----
-
-### Radarr
-
-Handles movie acquisition and management.
-
-Very similar role to Sonarr, but focused on films.
-
----
-
-### Seerr
-
-Provides the user-facing request interface.
-
-Responsibilities:
-
-- Request management
-- Integrations with Sonarr / Radarr
-- Friendly UI for discovery and approval workflows
-
----
-
-## Health & Stability Strategy
-
-Several mechanisms help keep the stack reliable:
-
-- Docker health checks
-- Gluetun health validation (connectivity + forwarded port)
-- Deunhealth auto-restarts
-- Explicit container dependencies
-
-This reduces manual intervention after reboots or transient failures.
-
----
-
-## Configuration Notes
-
-Environment variables are stored in a `.env` file.
-
-Typical values include:
-
-- `PUID`
-- `PGID`
-- `TZ`
-- VPN provider credentials
-
-Refer to the TechHutTV documentation for variable structure and examples:
-
-https://github.com/TechHutTV/homelab/tree/main/media#docker-compose-and-env
+Configuration snapshots were taken before repairs. They restore settings, not deleted payloads. See [operations](../Operations/README.md) and [Jellyfin](Jellyfin.md).

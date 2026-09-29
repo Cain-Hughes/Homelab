@@ -71,7 +71,7 @@ This allows Homarr to:
 - Display service status information
 - Provide dynamic widgets
 
-The container itself does not control Docker but can observe it.
+This mount grants access to the Docker API, including potentially privileged operations. It is not a read-only security boundary. Treat Homarr and its Docker integration as trusted administrative components.
 
 ---
 
@@ -79,7 +79,7 @@ The container itself does not control Docker but can observe it.
 
 Homarr requires a secret encryption key:
 
-SECRET_ENCRYPTION_KEY=<value>
+`SECRET_ENCRYPTION_KEY` is supplied through the local `.env` file. Generate a 64-character hexadecimal value with `openssl rand -hex 32`; preserve it with the app configuration and never commit it.
 
 This key is used internally for secure handling of sensitive configuration data.
 

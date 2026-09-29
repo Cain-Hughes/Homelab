@@ -1,113 +1,48 @@
-# Netwokring Overview (Work In Progress)
+# Networking overview
 
-This document provides a high-level overview of my home network architecture, segmentation strategy, and external exposure model.
+The network uses a UniFi Cloud Gateway Max for routing, firewall policies, and VLAN management, with a Cisco Catalyst switch operating at Layer 2. This public document retains private addressing but uses example service domains and omits credentials and public IP addresses.
 
-The environment is built around UniFi for routing, firewalling, and VLAN management, with a Cisco switch providing Layer 2 switching.
+## VLAN layout
 
----
+| VLAN | Purpose | Subnet |
+|---|---|---|
+| 1 | UniFi infrastructure | `10.10.1.0/24` |
+| 20 | Servers | `10.10.20.0/24` |
+| 30 | Trusted clients | `10.10.30.0/24` |
+| 40 | IoT devices | `10.10.40.0/24` |
+| 50 | Guest network | `10.10.50.0/24` |
+| 60 | Work devices | `192.168.1.0/24` |
 
-## Core Architecture
+The work network uses a different range to avoid a corporate VPN overlap. Wireless networks map to their respective VLANs; actual SSIDs are omitted. The separately documented WireGuard tunnel uses `10.10.99.0/24`.
 
-**Gateway / Routing / Firewall**
+## DNS and proxy paths
 
-- UniFi Cloud Gateway Max  
-- Handles inter-VLAN routing, firewall policies, and network segmentation  
-- Serves as the primary security boundary
+AdGuard Home runs as the primary resolver at `10.10.20.6` and on a separate Pi at `10.10.20.8`. A secondary DNS address does not guarantee that clients query only the primary until it fails; client resolver behavior varies.
 
-**Switching**
+NPM on `10.10.20.5` forwards service hostnames to LAN backends and handles TLS. Local DNS can resolve these hostnames to the proxy's private address, letting clients use HTTPS without traversing the public route. Real service domains are represented by `example.com` in this repository.
 
-- Cisco Catalyst Switch  
-- Operating strictly at Layer 2  
-- VLAN trunking to the gateway, access ports to endpoints
+```mermaid
+flowchart LR
+    Client[LAN client] --> DNS[AdGuard DNS]
+    Client --> NPM[NPM / HTTPS]
+    NPM --> Docker[Docker services]
+    NPM --> Pi[Pi services]
+    Kuma[Primary Kuma on Pi] --> Docker
+    Kuma2[Secondary Kuma on Docker host] --> Pi
+```
 
----
+## External access
 
-## Network Design Philosophy
+The existing documented design forwards HTTP/HTTPS through Cloudflare and the gateway to NPM, with gateway rules intended to restrict proxied inbound traffic to Cloudflare ranges. Other explicitly allowed game traffic is separate. Internal management access also uses WireGuard.
 
-The network is intentionally segmented to separate trust boundaries, reduce lateral movement, and improve overall security posture.
+This distinguishes intentionally published application routes from private VPN access; not all remote access follows one path. Current WAN firewall policy and external reachability were not re-audited during the September documentation update. Cloudflare proxying alone is not a guarantee against origin exposure.
 
-Each functional device class resides within its own VLAN and subnet.
+## Monitoring boundaries
 
-Addressing follows a simple convention: 10.10.<VLAN_ID>.0/24
+Use separate host, service, domain, and DNS-query checks to identify failure layers. A LAN HTTPS check exercises local DNS/NPM/TLS and the backend, but does not necessarily test public DNS, Cloudflare, WAN forwarding, or outside reachability.
 
-Exception:
+Both Kuma instances still depend on shared home infrastructure and Internet access for Telegram delivery. See [Uptime Kuma](../Containers/UptimeKuma.md).
 
-- The Work VLAN uses a 192.168.x.0/24 network to prevent overlap with an external corporate network accessed via VPN.
+## Docker network follow-up
 
----
-
-## VLAN Layout
-
-| VLAN | Purpose            | Subnet            |
-|------|--------------------|-------------------|
-| 1    | UniFi Infrastructure | 10.10.1.0/24Default |
-| 20   | Servers            | 10.10.20.0/24     |
-| 30   | Trusted Clients    | 10.10.30.0/24     |
-| 40   | IoT Devices        | 10.10.40.0/24     |
-| 50   | Guest Network      | 10.10.50.0/24     |
-| 60   | Work Devices       | 192.168.1.0/24    |
-
----
-
-## Wireless Networks
-
-Wireless networks are mapped directly to VLANs.
-
-- **wifi** → Trusted VLAN  
-- **wifi-guest** → Guest VLAN  
-- **wifi-IoT** → IoT VLAN  
-- **wifi-work (hidden)** → Work VLAN  
-
-SSID names are intentionally abstracted for privacy.
-
----
-
-## Firewall & External Exposure Model
-
-The network follows a minimal exposure principle.
-
-**Externally forwarded ports:**
-
-- Limited ports for a non-disclosed game server  
-- TCP 80 / 443 only
-
-**Cloudflare Integration:**
-
-- Public-facing services are routed through Cloudflare  
-- Cloudflare proxying is used to prevent direct IP exposure  
-- UniFi firewall rules restrict inbound traffic to Cloudflare IP ranges only
-
-This model ensures the WAN IP address is not directly exposed for proxied services.
-
----
-
-## Remote Access Strategy
-
-Remote access is handled exclusively through VPN connectivity.
-
-**WireGuard VPN**
-
-- Custom WireGuard configuration  
-- Tunnel Network: `10.10.99.0/24`  
-- Provides secure access to internal services and management interfaces  
-- Eliminates the need to expose internal applications directly
-
----
-
-## Security Approach
-
-Key design priorities include:
-
-- Network segmentation by trust level  
-- Least-privilege firewall policies  
-- Minimal port forwarding  
-- Reverse proxying and IP masking via Cloudflare  
-- VPN-only access to internal resources
-
----
-
-## Notes
-
-This document intentionally omits sensitive operational details, hostnames, and identifying information.
-
-Its purpose is to describe architectural decisions and design patterns rather than deployment specifics.
+The media stack's live Docker network requires an addressing correction. The public [Compose template](../Containers/MediaBackend.yaml) uses private `172.30.0.0/24` addressing instead. It is not a statement that the running network has already been migrated. Check overlap and dependencies before making that separate change.

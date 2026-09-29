@@ -1,6 +1,6 @@
 # Proxmox Hypervisor ***(work in progress)***
 
-This section documents the Proxmox VE environment that forms the core of my homelab. I am currently running Proxmox VE 9.x.x (Latest version as I am constantly updating) on an HPE ProLiant DL380 Gen9 configured as my primary hypervisor. Proxmox has been a reliable and flexible platform for managing virtual machines, containers, and hardware pass-through, and it continues to be one of the best hypervisors for hands-on learning and experimentation.
+This section documents the Proxmox VE environment that forms the core of my homelab. The previously documented Proxmox release family is 9.x (the exact installed point release and update schedule need re-verification) on an HPE ProLiant DL380 Gen9 configured as my primary hypervisor. Proxmox has been a reliable and flexible platform for managing virtual machines, containers, and hardware pass-through, and it continues to be one of the best hypervisors for hands-on learning and experimentation.
 
 My setup is designed to support storage virtualization, media services, network services, and general testing. Proxmox provides an easy way to isolate workloads, snapshot them, experiment with new configurations, and recover quickly when something breaks.
 
@@ -14,7 +14,7 @@ I am currently running the following VMs on the hypervisor:
   Manages all storage using ZFS, with twenty-four 10K SAS drives passed directly through the Smart Array controller operating in HBA mode. TrueNAS handles all disk integrity, redundancy, and pool management.
 
 - **Docker Server VM**  
-  Runs my media server stack using Docker and includes containers such as Jellyfin, Radarr, Sonarr, qBittorrent, Gluetun, Prowlarr, Jellyseerr, Homarr, Cloudflare-DDNS, and NPM. This VM centralizes all containerized workloads and keeps storage separate from applications.
+  Runs my media server stack using Docker and includes containers such as Jellyfin, Radarr, Sonarr, qBittorrent, Gluetun, Prowlarr, Seerr, Homarr, NPM, Unpackerr, Decluttarr, secondary Uptime Kuma, Streamystats, and Dockhand. This VM centralizes the main application workloads and keeps storage separate from applications.
 
 - **AMP Gameserver VM**  
   Hosts the AMP game management panel by Cubecoders. While AMP requires a license, the lifetime option is very affordable and provides a powerful, centralized way to deploy, manage, and maintain multiple game servers. The platform is actively developed and regularly updated, making it a reliable solution for long-term use.
@@ -29,7 +29,7 @@ I am currently running the following VMs on the hypervisor:
   All twenty-four SAS drives are passed directly into the TrueNAS VM for ZFS control.
 
 - **NVIDIA Quadro P2000**  
-  Installed for media transcoding and available for GPU passthrough. The P2000 is known for its strong NVENC/NVDEC support and low power draw, making it a great fit for Jellyfin and similar workloads.
+  Installed and visible inside the Jellyfin container. Application-level hardware acceleration is currently disabled; enabling and verifying NVENC/NVDEC is pending a maintenance window.
 
 - **Dual Intel Xeon E5-2695 v4 CPUs**  
   Provide more than enough cores for virtualization, media work, and parallel testing.
@@ -69,7 +69,13 @@ Proxmox updates are frequent and generally reliable. Enabling email notification
 Switch to the “no-subscription” repository to avoid update errors. This is a common first step for homelab builds.
 
 ### 5. Set Up a Backup Strategy Immediately  
-Use the built-in backup system to schedule regular snapshots or full VM backups. This is especially important for experimentation-heavy environments.
+Use scheduled VM backups with tested restores, and use snapshots separately for short-term rollback where the storage supports them. Snapshots are not independent backups. NFS media and passed-through TrueNAS data disks require separate protection; do not assume they are included in a VM backup.
 
-### 7. Keep Your Hardware Features in Mind  
+### 6. Keep Your Hardware Features in Mind
 If using GPU passthrough, SAS controllers, or high-performance drives, ensure all devices appear correctly in the IOMMU groups and that passthrough is configured before building your VMs.
+
+## Update automation status
+
+Nightly updates, weekly reboots, and alerts for updates requiring manual review were discussed. This documentation update did not verify or change the actual Proxmox timers, scripts, reboot schedule, or backup jobs, so those must not be treated as deployed guarantees. Host uptime alone does not prove that package updates succeeded.
+
+Record the installed package version, timer schedule, removal-handling policy, success/failure notifications, and reboot safeguards after checking the host. See [operations](../Operations/README.md) for the current follow-up list.

@@ -18,12 +18,13 @@ This section serves as a lightweight, chronological journal of improvements, tro
 * [Networking](https://github.com/Cain-Hughes/Homelab/tree/main/Networking) - Logical layout and design of my network
 * [Hypervisor](https://github.com/Cain-Hughes/Homelab/tree/main/Hypervisor) - My preferred hypervisor and its configuration
 * [Virtual Machines](https://github.com/Cain-Hughes/Homelab/tree/main/Virtual-Machines) - List of all my VM's and their setups
-* [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/Containers) - List of all my containers and their setups
+* [Containers](Containers/README.md) - Service documentation and sanitized Compose examples
+* [Operations and recovery](Operations/README.md) - Verified changes, backup boundaries, and planned maintenance
 
 
 ## Infrastructure
 
-My current hardware stack centers around an HPE ProLiant DL380 Gen9 server with approximately 14 TB of storage, supported by an Eaton 1U UPS.  
+My current hardware stack centers around an HPE ProLiant DL380 Gen9 server with approximately 14.4 TB of raw SAS capacity (usable capacity is lower after ZFS redundancy and formatting), supported by an Eaton 1U UPS.
 You can find detailed hardware information, configuration notes, and lessons learned on the [Infrastructure](https://github.com/Cain-Hughes/Homelab/tree/main/Infrastructure) page.
 
 
@@ -47,3 +48,11 @@ Details on each virtual machine and their roles can be found on the
 
 My services are primarily containerized to keep the environment modular and easy to maintain. This includes media applications, supporting tools, and system utilities. A full list of the containers I run, along with their configurations and purposes, can be found on the  
 [Containers](https://github.com/Cain-Hughes/Homelab/tree/main/Containers) page.
+
+## September 2026 update
+
+The lab now includes primary and secondary Uptime Kuma monitoring, Telegram notifications, and Streamystats for Jellyfin viewing analytics. Media work consolidated Sonarr profiles, restricted Seerr request choices, repaired archive/queue handling, and added local NFO/artwork export.
+
+GPU acceleration, Continue Watching deduplication, and Maintainerr remain deferred. The P2000 is available to Jellyfin, but acceleration is currently disabled in the application. A complete independent backup strategy is also outstanding.
+
+Read the [September build log](BuildLog/2026-09.md) and [current operations status](Operations/README.md). Configuration examples omit secrets and use placeholder domains. They are not production backups or a promise that every application setting is recreated by Compose.

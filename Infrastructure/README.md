@@ -6,7 +6,7 @@ My primary homelab server is an HPE ProLiant DL380 Gen9 equipped with dual Intel
 ## Recommended Setup Steps (HPE DL380 Gen9)
 
 ### 1. Start with a Clean Slate  
-Remove any existing storage drives and fully format them. While this is in progress, enter the BIOS and reset all settings to factory defaults, including the iLO module.
+For newly acquired hardware, inventory the drives and preserve any data that must be kept before repurposing storage. Review BIOS and iLO settings deliberately; a reset or format is destructive and is not a routine update step.
 
 
 ### 2. Configure iLO Early  
@@ -34,7 +34,7 @@ For the operating system or hypervisor, use an SSD rather than traditional hard 
 
 This configuration has served as a solid foundation for my homelab and supports future expansion as my environment grows.
 
-You can either run this storage in a mirrored raid configuration for redundency or you can store backups of your OS and virtual machines in the case of a failure. I have opted to run a single ssd and perform backups instead do to the general reliablity of SSD's.
+The OS/VM storage uses a single SSD. A mirror could improve availability, but it would not replace backups. A tested, scheduled backup strategy has not been verified for this environment; local troubleshooting copies do not establish full recovery coverage. See [operations and recovery](../Operations/README.md).
 
 
 ### 6. SAS Storage Array
@@ -45,15 +45,25 @@ Running the controller in HBA mode ensures:
 - Better data consistency and error reporting  
 - The ability to utilize ZFS features such as RAIDZ, snapshots, and self-healing  
 
-This configuration has worked reliably and provides the performance I need for my media-focused workloads.
+This configuration supports my media-focused workloads. The disk-health and backup follow-ups below remain outstanding.
 
 
 ### 7. GPU Acceleration
 The server is equipped with an NVIDIA Quadro P2000. This card is widely used in media servers for its strong NVENC/NVDEC hardware encoding capabilities and power efficiency. In my setup, it is available for GPU acceleration tasks such as transcoding within Jellyfin and other containers.
 
-Using the P2000 allows me to:
+The P2000 is intended to:
 - Offload transcoding workloads from the CPUs  
 - Support multiple simultaneous media streams  
 - Maintain lower overall system load during peak usage  
 
-This GPU has been a solid addition to the system and integrates well with my current Proxmox and container-based environment.
+September 28 verification confirmed the GPU is visible inside Jellyfin, but Jellyfin's hardware acceleration method is currently None. Recent video transcodes used software encoding. Enabling and testing hardware acceleration is deferred to a maintenance window.
+
+## Separate monitoring and DNS device
+
+A Raspberry Pi at `10.10.20.8` runs secondary AdGuard Home and primary Uptime Kuma. Secondary Kuma runs on the Docker VM. Keeping the primary monitor on a separate device improves visibility into VM/host failures, while both devices still share some network and power dependencies.
+
+## Storage health and capacity
+
+Twenty-four 600 GB drives provide approximately 14.4 TB of raw decimal capacity. This is not the usable ZFS capacity; redundancy and formatting reduce it. A drive in a RAIDZ2 vdev has reported read errors while remaining ONLINE. The cause and remaining lifetime have not been established, and no replacement or pool rebuild is claimed here.
+
+An independent media backup has not been established by this work. Disk health, backups, and potential future NAS replacement remain follow-ups; proposed hardware is not part of the deployed inventory.

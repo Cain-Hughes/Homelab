@@ -1,8 +1,10 @@
+# Public deployment template, not a production export.
+# Private example subnet differs from the current live network; do not apply as an in-place migration.
+# Copy MediaBackend.env.example to .env and provide local credentials.
 # Compose file for the *arr stack. Configuration files are stored in the
 # directory you launch the compose file on. Change to bind mounts if needed.
-# All containers are ran with user and group ids of the main user and
-# group to aviod permissions issues of downloaded files, please refer
-# the read me file for more information.
+# User/group configuration depends on each image; see MediaBackend.md
+# for shared-file permissions and deployment requirements.
 
 #############################################################################
 # NOTICE: We recently switched to using a .env file. PLEASE refer to the docs.
@@ -14,7 +16,7 @@ networks:
     name: medianetwork
     ipam:
       config:
-        - subnet: 172.39.0.0/24
+        - subnet: 172.30.0.0/24
 
 services:
   gluetun:
@@ -26,7 +28,7 @@ services:
       - /dev/net/tun:/dev/net/tun
     networks:
       medianetwork:
-        ipv4_address: 172.39.0.2
+        ipv4_address: 172.30.0.2
     ports:
       - 8080:8080 # qbittorrent web interface
      ## - 6881:6881 # qbittorrent torrent port
@@ -39,7 +41,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - 'ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1 && test -s /tmp/gluetun/forwarded_port'
+        - 'ping -c 1 -W 2 one.one.one.one >/dev/null 2>&1 && test -s /tmp/gluetun/forwarded_port'
       interval: 20s
       timeout: 10s
       retries: 5
@@ -47,7 +49,7 @@ services:
     restart: unless-stopped
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent:5.1.4
     container_name: qbittorrent
     restart: unless-stopped
     labels:
@@ -117,7 +119,7 @@ services:
       - 8989:8989
     networks:
       medianetwork:
-        ipv4_address: 172.39.0.3
+        ipv4_address: 172.30.0.3
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -135,7 +137,7 @@ services:
       - 7878:7878
     networks:
       medianetwork:
-        ipv4_address: 172.39.0.4
+        ipv4_address: 172.30.0.4
 
   seerr:
     container_name: seerr
@@ -150,5 +152,40 @@ services:
       - 5055:5055
     networks:
       medianetwork:
-        ipv4_address: 172.39.0.9
+        ipv4_address: 172.30.0.9
     restart: unless-stopped
+
+  unpackerr:
+    image: golift/unpackerr:latest
+    container_name: unpackerr
+    user: "${PUID}:${PGID}"
+    restart: unless-stopped
+    volumes:
+      - /data/downloads:/data/downloads
+    environment:
+      TZ: ${TZ}
+      UN_SONARR_0_URL: http://sonarr:8989
+      UN_SONARR_0_API_KEY: ${SONARR_API_KEY:?Set SONARR_API_KEY in .env}
+      UN_SONARR_0_PATHS_0: /data/downloads
+      UN_RADARR_0_URL: http://radarr:7878
+      UN_RADARR_0_API_KEY: ${RADARR_API_KEY:?Set RADARR_API_KEY in .env}
+      UN_RADARR_0_PATHS_0: /data/downloads
+    networks:
+      medianetwork:
+        ipv4_address: 172.30.0.11
+
+  decluttarr:
+    image: ghcr.io/manimatter/decluttarr:latest
+    container_name: decluttarr
+    restart: always
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    volumes:
+      - ./decluttarr/config.yaml:/app/config/config.yaml
+      - ./decluttarr/logs:/app/logs
+      - /data:/data
+    networks:
+      medianetwork:
+        ipv4_address: 172.30.0.10

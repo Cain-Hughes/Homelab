@@ -1,0 +1,29 @@
+services:
+  streamystats:
+    image: ghcr.io/fredrikburmester/streamystats-aio:v2.20.0
+    container_name: streamystats
+    restart: unless-stopped
+    stop_grace_period: 60s
+    ports:
+      - "10.10.20.5:3002:3000"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      TZ: America/New_York
+      NODE_ENV: production
+      POSTGRES_USER: postgres
+      POSTGRES_DB: streamystats
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@localhost:5432/streamystats
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in .env}
+      NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY:?Set NEXT_SERVER_ACTIONS_ENCRYPTION_KEY in .env}
+    dns:
+      - 10.10.20.6
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

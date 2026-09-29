@@ -1,114 +1,51 @@
 # Jellyfin
 
-**[This compose file](https://github.com/Cain-Hughes/Homelab/tree/main/Containers/Jellyfin.yaml)** defines my Jellyfin media server, which acts as the primary platform for consuming and streaming media within the homelab.
+Jellyfin presents the media library and serves playback to browsers, TVs, and other clients. It runs on the Docker host with configuration under `/docker/jellyfin/config` and media mounted at `/data`.
 
-Jellyfin is responsible for presenting and organizing media while leveraging GPU acceleration to handle transcoding workloads efficiently.
+- LAN endpoint: `http://10.10.20.5:8096`
+- HTTPS: handled by NPM; documentation uses `watch.example.com`
+- Server version checked September 28, 2026: **12.1.0**
+- [Compose example](Jellyfin.yaml): LinuxServer image, UID/GID 1000, persistent configuration, `unless-stopped` restart policy
 
----
+## GPU available, acceleration not yet enabled
 
-## Purpose of This Service
+The host contains an NVIDIA Quadro P2000. The container uses the NVIDIA runtime, and `nvidia-smi` inside Jellyfin successfully identifies the card.
 
-Jellyfin serves as the central media playback and management interface.
+However, live settings were verified as:
 
-Core responsibilities include:
+```text
+HardwareAccelerationType: none
+EnableHardwareEncoding: true
+```
 
-- Media library presentation
-- Metadata aggregation and artwork
-- Client streaming and playback
-- Transcoding and format compatibility
-- Centralized media access across devices
+The checkbox does not activate acceleration when the selected method is None. Recent logs used `libx264` with native H.264 decoding. Those sessions were software video transcodes despite the GPU being available.
 
-This container represents the user-facing component of the media stack.
+Enabling NVIDIA NVENC/NVDEC and testing supported codecs is **deferred to a maintenance window**. The Compose file makes the GPU available; it does not set Jellyfin's acceleration method. No GPU or playback settings were changed during this documentation update.
 
----
+During that work, check the generated FFmpeg command, encoder name, GPU encoder/decoder activity, and actual playback. A “Transcoding” label or visible GPU does not prove hardware encoding. Reference: [Jellyfin NVIDIA guide](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/nvidia/).
 
-## Hardware Acceleration Strategy
+## Why a file transcodes
 
-This instance is configured to use NVIDIA GPU acceleration.
+The client must support the container, video, audio, subtitles, and requested bitrate. One investigated session required unsupported-audio conversion and video bitrate reduction. The dashboard's output format is not necessarily the source file's format.
 
-Key configuration elements:
+Distinguish direct play, remuxing, audio-only conversion, and video re-encoding. Check the session reasons and FFmpeg log before changing profiles or acquiring a replacement. A lower client quality limit can trigger video transcoding even when the video codec is supported.
 
-- `runtime: nvidia`
-- `NVIDIA_VISIBLE_DEVICES=all`
-- `NVIDIA_DRIVER_CAPABILITIES=compute,video,utility`
+## Metadata and artwork
 
-GPU offloading significantly reduces CPU load during transcoding and improves playback reliability for remote or bandwidth-constrained clients.
+Sonarr and Radarr export local NFO metadata and artwork through their Kodi (XBMC) / Emby metadata consumers. Sonarr provides series/episode metadata and series/season/episode images; Radarr writes `movie.nfo` and movie artwork.
 
----
+A targeted missing-artwork repair confirmed Jellyfin picked up the generated identification and images. The case involved a title that had not matched correctly. Online metadata/image providers were configured; an obsolete configuration field must not be used as proof they were disabled.
 
-## Port Mapping
+These exports help future imports and refreshed items. They do not replace video files or guarantee that every existing unmatched item has been repaired. Prefer targeted identification/refresh when that resolves the issue.
 
-Jellyfin exposes a single service port:
+## Continue Watching and Next Up
 
-8096 → Jellyfin Web Interface / HTTP
+Continue Watching can contain several partially watched episodes from one series. It differs from Next Up, although some clients merge the rows. Older resume positions can remain after moving ahead in a show.
 
-This port provides access to:
+The desired behavior is one most-recently-played unfinished episode per series while preserving older progress. A third-party [Continue Watching Deduplicator](https://github.com/SloMR/jellyfin-plugin-dedupe-continue-watching) was researched but **not installed**. Its published compatibility target needs verification against this server release. Back up the database/configuration and preserve a rollback path before testing.
 
-- Web UI
-- API endpoints
-- Client connections
+## Statistics and recovery
 
-HTTPS, if used, is typically handled upstream by the reverse proxy.
+[Streamystats](Streamystats.md) collects playback through Jellyfin's API. It does not require Playback Reporting for live collection, and its new database does not contain a complete pre-installation viewing history.
 
----
-
-## Data Persistence
-
-Two mounts are used to preserve configuration and media access:
-
-- `./config → /config`  
-  Stores server configuration, plugins, cache, and metadata
-
-- `/data → /data`  
-  Provides access to the media library
-
-Separating configuration from media storage ensures rebuild safety and simplifies migrations.
-
----
-
-## Identity & Permissions
-
-The container runs using fixed user and group IDs:
-
-PUID=1000  
-PGID=1000
-
-This avoids permission conflicts with shared storage and downloaded media.
-
----
-
-## Restart Behavior
-
-The container uses:
-
-restart: unless-stopped
-
-This allows Jellyfin to recover automatically after host restarts or transient failures.
-
----
-
-## Operational Role in the Network
-
-Jellyfin functions as the presentation layer of the media environment.
-
-Typical flow:
-
-Storage → Jellyfin → Client Devices
-
-When combined with a reverse proxy:
-
-Internet / LAN → Proxy → Jellyfin
-
----
-
-## Notes
-
-- GPU acceleration is critical for efficient transcoding
-- Direct exposure is limited to the service port
-- Configuration survives container recreation
-- Media storage is externally managed
-- Reverse proxy handles TLS when enabled
-
----
-
-This service is designed to remain stable, persistent, and resource-efficient as it directly impacts user experience.
+Back up Jellyfin configuration and its database consistently, using a supported backup mechanism or with Jellyfin stopped. Container recreation is not a backup. NFS media needs its own backup plan; see [operations](../Operations/README.md).

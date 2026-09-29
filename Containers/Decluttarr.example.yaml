@@ -1,0 +1,50 @@
+# Example for the reviewed Decluttarr 2.1 configuration structure.
+# Copy to /docker/mediabackend/decluttarr/config.yaml and populate locally.
+# Intentionally dry-run; differs from the live deployment.
+general:
+  log_level: INFO
+  test_run: true
+  timer: 15
+  ssl_verification: true
+  private_tracker_handling: obsolete_tag
+  public_tracker_handling: remove
+  obsolete_tag: Obsolete
+  protected_tag: Keep
+job_defaults:
+  max_strikes: 6
+  min_days_between_searches: 1
+  max_concurrent_searches: 3
+jobs:
+  remove_failed_downloads:
+  remove_failed_imports:
+    message_patterns:
+      - "Not a Custom Format upgrade for existing*"
+      - "Not an upgrade for existing*"
+      - "*Found potentially dangerous file with extension*"
+      - "*Found executable file with extension*"
+      - "Invalid video file*"
+      - "No files found are eligible for import*"
+      - "One or more episodes expected in this release were not imported or missing from the release"
+  remove_metadata_missing:
+  remove_missing_files:
+  remove_stalled:
+  remove_unmonitored:
+  remove_slow:
+    min_speed: 100
+  search_missing:
+  search_unmet_cutoff:
+  remove_done_seeding:
+  detect_deletions:
+# remove_bad_files is intentionally omitted/disabled.
+instances:
+  sonarr:
+    - base_url: http://sonarr:8989
+      api_key: REPLACE_LOCALLY
+  radarr:
+    - base_url: http://radarr:7878
+      api_key: REPLACE_LOCALLY
+download_clients:
+  qbittorrent:
+    - base_url: http://gluetun:8080
+      name: qBittorrent
+# Configure download-client authentication privately as needed.
